@@ -89,6 +89,21 @@ AddEventHandler("poke_adminjail:check_jail", function()
     end)
 end)
 
+RegisterServerEvent("poke_adminjail:increasetime")
+AddEventHandler("poke_adminjail:increasetime", function(target_id, time, newtime)
+    local _source = source
+    local steam_id = GetPlayerIdentifiers(target_id)[1]
+    exports.ghmattimysql:execute("SELECT * FROM user_jail WHERE identifier = @identifier", {["@identifier"] = steam_id}, function(result)
+        if result[1] ~= nil then
+            local time = result[1]["time_s"]
+            local id = result[1]["id"]
+            exports.ghmattimysql:execute("UPDATE user_jail SET time_s = @time_s WHERE id = @id", {["@time_s"] = time + newtime, ["@id"] = id})
+            exports.ghmattimysql:execute("UPDATE user_jail SET time = @time WHERE id = @id", {["@time"] = getTime() + time + newtime, ["@id"] = id})
+            TriggerClientEvent("vorp:Tip", _source, 'Se ha aumentado '..newtime..' segundos tu condena, no intentes escapar', 5000)
+        end
+    end)
+end)
+
 function getTime ()
     return os.time(os.date("!*t"))
 end

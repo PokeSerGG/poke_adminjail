@@ -63,6 +63,11 @@ Citizen.CreateThread(function()
                     FreezeEntityPosition(ped, true)
                     Citizen.Wait(1000)
                     FreezeEntityPosition(ped, false)
+                    if Config.IncreaseSentence then
+                        local player_server_id = GetPlayerServerId(PlayerId())
+                        TriggerServerEvent('poke_adminjail:increasetime', player_server_id, jail_time, Config.IncreaseTime*60)
+                        jail_time = jail_time + Config.IncreaseTime*60
+                    end
                 end
             end
 
