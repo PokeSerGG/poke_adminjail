@@ -79,7 +79,7 @@ AddEventHandler("poke_adminjail:check_jail", function()
 
     exports.ghmattimysql:execute("SELECT * FROM user_jail WHERE identifier = @identifier", {["@identifier"] = steam_id}, function(result)
 
-        if result ~= nil then
+        if result[1] ~= nil then
             local time = result[1]["time_s"]
             local id = result[1]["id"]
             exports.ghmattimysql:execute("UPDATE user_jail SET time = @time WHERE id = @id", {["@time"] = getTime() + time, ["@id"] = id})
