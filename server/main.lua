@@ -1,34 +1,36 @@
+VorpCore = {}
+
+TriggerEvent("getCore",function(core)
+    VorpCore = core
+end)
+
 RegisterCommand('jail', function(source, args, rawCommand)
     local _source = source
-
-    TriggerEvent("vorp:getCharacter", _source, function(user)
-        local group = user.group
-        if group == 'admin' then
-            local target_id = args[1]
-            local time = tonumber(args[2])
-            TriggerClientEvent('poke_adminjail:request', _source, target_id, time)
-        end
-    end)
+    local User = VorpCore.getUser(_source)
+    local group = User.getGroup
+    if group == 'admin' then
+        local target_id = args[1]
+        local time = tonumber(args[2])
+        TriggerClientEvent('poke_adminjail:request', _source, target_id, time)
+    end
 end, false)
 
 RegisterCommand('unjail', function(source, args, rawCommand)
     local _source = source
+    local User = VorpCore.getUser(_source)
+    local group = User.getGroup
+    if group == 'admin' then
+        local target_id = args[1]
+        local steam_id = GetPlayerIdentifiers(target_id)[1]
 
-    TriggerEvent("vorp:getCharacter", _source, function(user)
-        local group = user.group
-        if group == 'admin' then
-            local target_id = args[1]
-            local steam_id = GetPlayerIdentifiers(target_id)[1]
-
-            exports.ghmattimysql:execute("DELETE FROM user_jail WHERE identifier = @identifier", {["@identifier"] = steam_id}, function(result)
-                if result ~= nil then
-                    TriggerClientEvent("poke_adminjail:unjail_player", target_id)
-                else
-                    TriggerClientEvent("vorp:Tip", _source, 'Ha ocurrido un error en esa consulta', 5000)
-                end
-            end)
-        end
-    end)
+        exports.ghmattimysql:execute("DELETE FROM user_jail WHERE identifier = @identifier", {["@identifier"] = steam_id}, function(result)
+            if result ~= nil then
+                TriggerClientEvent("poke_adminjail:unjail_player", target_id)
+            else
+                TriggerClientEvent("vorp:Tip", _source, 'Ha ocurrido un error en esa consulta', 5000)
+            end
+        end)
+    end
 end, false)
 
 RegisterServerEvent("poke_adminjail:jail")
