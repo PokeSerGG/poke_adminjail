@@ -22,8 +22,11 @@ RegisterCommand('unjail', function(source, args, rawCommand)
     if group == 'admin' then
         local target_id = args[1]
         local steam_id = GetPlayerIdentifiers(target_id)[1]
+        local User = VorpCore.getUser(target_id)
+        local CharInfo = User.getUsedCharacter
+        local Character = CharInfo.charIdentifier
 
-        exports.ghmattimysql:execute("DELETE FROM user_jail WHERE identifier = @identifier", {["@identifier"] = steam_id}, function(result)
+        exports.ghmattimysql:execute("DELETE FROM user_jail WHERE identifier = @identifier AND characterid = @characterid", {["@identifier"] = steam_id, ["@characterid"] = Character}, function(result)
             if result ~= nil then
                 TriggerClientEvent("poke_adminjail:unjail_player", target_id)
             else
@@ -39,6 +42,9 @@ AddEventHandler("poke_adminjail:jail", function(target_id, time)
     -- USER INFO
     local user_name = GetPlayerName(target_id)
     local steam_id = GetPlayerIdentifiers(target_id)[1]
+    local User = VorpCore.getUser(target_id)
+    local CharInfo = User.getUsedCharacter
+    local Character = CharInfo.charIdentifier
     -- ADMIN INFO
     local admin_name = GetPlayerName(_source)
     local admin_steam = GetPlayerIdentifiers(_source)[1]
@@ -48,7 +54,7 @@ AddEventHandler("poke_adminjail:jail", function(target_id, time)
     local time = time * 60
     local timestamp = getTime() + time
 
-    exports.ghmattimysql:execute("INSERT INTO user_jail (identifier, name, admin_name, admin_identifier, time, time_s) VALUES (@identifier, @name, @admin_name, @admin_identifier, @timestamp, @time)", {["@identifier"] = steam_id, ["@name"] = user_name, ["@admin_name"] = admin_name, ["@admin_identifier"] = admin_steam, ["@timestamp"] = timestamp, ["@time"] = time}, function(result)
+    exports.ghmattimysql:execute("INSERT INTO user_jail (identifier, characterid, name, admin_name, admin_identifier, time, time_s) VALUES (@identifier, @characterid, @name, @admin_name, @admin_identifier, @timestamp, @time)", {["@identifier"] = steam_id, ["@characterid"] = Character, ["@name"] = user_name, ["@admin_name"] = admin_name, ["@admin_identifier"] = admin_steam, ["@timestamp"] = timestamp, ["@time"] = time}, function(result)
         if result ~= nil then
             TriggerClientEvent("poke_adminjail:jail_player", target_id, time)
         else
@@ -61,8 +67,11 @@ RegisterServerEvent("poke_adminjail:unjail")
 AddEventHandler("poke_adminjail:unjail", function(target_id)
     local _source = source
     local steam_id = GetPlayerIdentifiers(target_id)[1]
+    local User = VorpCore.getUser(target_id)
+    local CharInfo = User.getUsedCharacter
+    local Character = CharInfo.charIdentifier
 
-    exports.ghmattimysql:execute("DELETE FROM user_jail WHERE identifier = @identifier", {["@identifier"] = steam_id}, function(result)
+    exports.ghmattimysql:execute("DELETE FROM user_jail WHERE identifier = @identifier AND characterid = @characterid", {["@identifier"] = steam_id, ["@characterid"] = Character}, function(result)
         if result ~= nil then
             TriggerClientEvent("poke_adminjail:unjail_player", target_id)
         else
@@ -78,8 +87,11 @@ AddEventHandler("poke_adminjail:check_jail", function()
     Citizen.Wait(2000)
 
     local steam_id = GetPlayerIdentifiers(_source)[1]
+    local User = VorpCore.getUser(_source)
+    local CharInfo = User.getUsedCharacter
+    local Character = CharInfo.charIdentifier
 
-    exports.ghmattimysql:execute("SELECT * FROM user_jail WHERE identifier = @identifier", {["@identifier"] = steam_id}, function(result)
+    exports.ghmattimysql:execute("SELECT * FROM user_jail WHERE identifier = @identifier AND characterid = @characterid", {["@identifier"] = steam_id, ["@characterid"] = Character}, function(result)
 
         if result[1] ~= nil then
             local time = result[1]["time_s"]
@@ -95,7 +107,10 @@ RegisterServerEvent("poke_adminjail:increasetime")
 AddEventHandler("poke_adminjail:increasetime", function(target_id, time, newtime)
     local _source = source
     local steam_id = GetPlayerIdentifiers(target_id)[1]
-    exports.ghmattimysql:execute("SELECT * FROM user_jail WHERE identifier = @identifier", {["@identifier"] = steam_id}, function(result)
+    local User = VorpCore.getUser(target_id)
+    local CharInfo = User.getUsedCharacter
+    local Character = CharInfo.charIdentifier
+    exports.ghmattimysql:execute("SELECT * FROM user_jail WHERE identifier = @identifier AND characterid = @characterid", {["@identifier"] = steam_id, ["@characterid"] = Character}, function(result)
         if result[1] ~= nil then
             local time = result[1]["time_s"]
             local id = result[1]["id"]

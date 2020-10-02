@@ -1,8 +1,8 @@
 local jailed = false
 local jail_time
 
-AddEventHandler('playerSpawned', function(spawn)
-    Citizen.Wait(3000)
+RegisterNetEvent("vorp:SelectedCharacter")
+AddEventHandler("vorp:SelectedCharacter", function(charid)
     TriggerServerEvent("poke_adminjail:check_jail")
 end)
 
