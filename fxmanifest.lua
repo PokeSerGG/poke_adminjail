@@ -13,3 +13,8 @@ client_script {
     'config.lua',
 	'client/main.lua'
 }
+
+shared_scripts {
+	'locale.lua',
+	'locales/es.lua'
+}

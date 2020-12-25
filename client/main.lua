@@ -22,7 +22,7 @@ AddEventHandler("poke_adminjail:jail_player", function(time)
             FreezeEntityPosition(ped, true)
             jail_time = time
             jailed = true
-            TriggerEvent("vorp:Tip", 'Has sido encarcelado por '..time_minutes..' minutos', 5000)
+            TriggerEvent("vorp:Tip", _U('jailed_player', time_minutes), 5000)
             Citizen.Wait(1000)
             FreezeEntityPosition(ped, false)
         end
@@ -34,7 +34,7 @@ AddEventHandler("poke_adminjail:unjail_player", function()
     local local_ped = PlayerPedId()
     local local_player = PlayerId()
 
-    TriggerEvent("vorp:Tip", 'Has salido de prisión, no la lies mas', 5000)
+    TriggerEvent("vorp:Tip", _U('released_player'), 5000)
     jailed = false
     jail_time = nil
     SetEntityCoords(local_ped, Config.ExitFromJail.x, Config.ExitFromJail.y, Config.ExitFromJail.z)
@@ -44,7 +44,9 @@ end)
 Citizen.CreateThread(function ()
     while true do
         if jailed then
-            DrawTxt('Encarcelado: '..jail_time..' segundos restantes', 0.3, 0.95, 0.4, 0.4, true, 255, 255, 255, 150, false)
+            DrawTxt(_U('on_prison', jail_time), 0.3, 0.95, 0.4, 0.4, true, 255, 255, 255, 150, false)
+        else
+            Citizen.Wait(500)
         end
         Citizen.Wait(0)
     end
@@ -91,8 +93,6 @@ end)
 
 function DrawTxt(str, x, y, w, h, enableShadow, col1, col2, col3, a, centre)
     local str = CreateVarString(10, "LITERAL_STRING", str)
-
-
     --Citizen.InvokeNative(0x66E0276CC5F6B9DA, 2)
     SetTextScale(w, h)
     SetTextColor(math.floor(col1), math.floor(col2), math.floor(col3), math.floor(a))
